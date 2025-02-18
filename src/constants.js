@@ -6,13 +6,16 @@ export const CANVAS_DIMENSIONS = {
 }
 
 // key : value in pixel
+
+
 export const SNAP_GRID = {
-    'XS': 5,
-    'S': 10,
-    'M': 20,
-    'L': 40,
-    'XL': 80
+    'XS': 2.5,
+    'S': 5,
+    'M': 10,
+    'L': 20,
+    'XL': 40
 };
+
 
 // proportion from different unit measures 
 // pixels are the base...

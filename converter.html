@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Export DXF</title>
+</head>
+<body>
+
+    <h1>Upload JSON and Export to DXF</h1>
+
+    <label for="jsonUpload">Choose JSON File:</label>
+    <input type="file" id="jsonUpload" accept=".json">
+    
+    <button id="exportButton" disabled>Export as DXF</button>
+
+    <script>
+        document.getElementById('jsonUpload').addEventListener('change', function(event) {
+            const file = event.target.files[0];
+            if (file && file.name.endsWith('.json')) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    try {
+                        // Parse the JSON content from the uploaded file
+                        const jsonData = JSON.parse(e.target.result);
+
+                        // Enable the export button if the file is valid
+                        document.getElementById('exportButton').disabled = false;
+
+                        // Add the export functionality
+                        document.getElementById('exportButton').onclick = function() {
+                            exportToDXF(jsonData);
+                        };
+                    } catch (err) {
+                        alert("Invalid JSON file!");
+                    }
+                };
+                reader.readAsText(file);
+            } else {
+                alert("Please upload a valid JSON file.");
+            }
+        });
+
+        function exportToDXF(json) {
+            let dxfContent = '0\nSECTION\n2\nHEADER\n0\nENDSEC\n';
+            dxfContent += '0\nSECTION\n2\nTABLES\n0\nENDSEC\n';
+            dxfContent += '0\nSECTION\n2\nBLOCKS\n0\nENDSEC\n';
+            dxfContent += '0\nSECTION\n2\nENTITIES\n';
+
+            json.shapes.forEach(shape => {
+                if (shape.start_x && shape.start_y && shape.end_x && shape.end_y) {
+                    // Line
+                    dxfContent += `0\nLINE\n8\n0\n10\n${shape.start_x}\n20\n${shape.start_y}\n30\n0.0\n`;
+                    dxfContent += `11\n${shape.end_x}\n21\n${shape.end_y}\n31\n0.0\n`;
+                } else if (shape.radius) {
+                    // Circle
+                    dxfContent += `0\nCIRCLE\n8\n0\n10\n${shape.start_x}\n20\n${shape.start_y}\n30\n0.0\n`;
+                    dxfContent += `40\n${shape.radius}\n`;
+                } else if (shape.measure) {
+                    // Text (annotation)
+                    dxfContent += `0\nTEXT\n8\n0\n10\n${shape.start_x}\n20\n${shape.start_y}\n30\n0.0\n`;
+                    dxfContent += `40\n${shape.font}\n1\n${shape.measure}\n`;
+                }
+            });
+
+            dxfContent += '0\nENDSEC\n0\nSECTION\n2\nOBJECTS\n0\nENDSEC\n0\nEOF\n';
+
+            // Create a Blob object from the DXF content and trigger a download
+            const blob = new Blob([dxfContent], { type: 'application/dxf' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'drawing.dxf';
+            link.click();
+        }
+    </script>
+
+</body>
+</html>
