@@ -7,14 +7,14 @@ export const CANVAS_DIMENSIONS = {
 
 // key : value in pixel
 
-
 export const SNAP_GRID = {
-    'XS': 2.5,
-    'S': 5,
-    'M': 10,
-    'L': 20,
-    'XL': 40
+    'XS': 2.4,  // 5 / 3
+    'S': 3.7,   // 10 / 3
+    'M': 8,   // 20 / 3
+    'L': 14,  // 40 / 3
+    'XL': 28  // 80 / 3
 };
+
 
 
 // proportion from different unit measures 
